@@ -6,7 +6,7 @@
     <title>Happy Birthday</title>
     <script>
         function fetchBirthdayMessage() {
-            fetch('/birthday') // Ensure the URL is correct
+            fetch('https://teste-9cy6y2u6z-tomas-projects-e7dd0f4c.vercel.app/birthday') // Use the full URL of your deployment
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('message').textContent = data.message;
