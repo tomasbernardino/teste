@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday</title>
+    <script>
+        function fetchBirthdayMessage() {
+            fetch('/birthday') // Ensure the URL is correct
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('message').textContent = data.message;
+                })
+                .catch(error => console.error('Error fetching the message:', error));
+        }
+    </script>
+</head>
+<body>
+    <button onclick="fetchBirthdayMessage()">Hello, click me.</button>
+    <pre id="message"></pre>
+</body>
+</html>
