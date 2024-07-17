@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ha ha  ha     ha...</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            margin: 100px;
+            font-family: Arial, sans-serif;
+            background-color:rgb(220, 208, 255); /* Cor de fundo */
+            position: relative;  /* Para permitir o posicionamento absoluto dos filhos */
+        }
+        #birthdayInput {
+            background-color: rgb(200, 187, 245);  /* Change to desired color */
+            color: gray;  /* Text color */
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            width: 200px;
+            box-sizing: border-box;
+            outline: none;
+            text-align: center;
+            position: absolute; /* Permite mover a caixa de texto */
+            transition: all 0.5s;
+            top: 10%; /* Posição inicial ajustada */
+            left: 50%;
+            transform: translateX(-50%); /* Centraliza horizontalmente */
+        }
+
+        #birthdayInput::placeholder {
+            color: gray;  /* Placeholder text color */
+        }
+
+        #birthdayInput:hover {
+            background-color: rgb(177, 161, 236);  /* Change color on focus */
+        }
+
+        #messageContainer {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            position: absolute;
+            top: 15%;
+        }
+
+        #message {
+            text-align: left;
+            white-space: pre-wrap;  /* Mantém a quebra de linha */
+            color: purple;
+        }
+    </style>
+</head>
+<body>
+    <input type="text" id="birthdayInput" placeholder="Como te chamas?">
+    <div id="messageContainer">
+        <pre id="message"></pre>
+    </div>
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            const moveDuration = 10000; // Duração total em milissegundos
+            const initialPosition = { top: '10%', left: '50%' }; // Posição inicial
+            let isMoving = false; // Flag for moving state
+            let isFetchingMessage = false; // Flag for message fetching state
+    
+            $('#birthdayInput').css(initialPosition).prop('disabled', false); // Ativa o input inicialmente
+
+            $('#birthdayInput').on('click', function() {
+                if (isMoving) return; // Ignora cliques enquanto está se movendo
+
+                isMoving = true; // Ativa a flag de movimento
+                $(this).prop('disabled', true); // Desabilita o input ao clicar
+                moveInput(); // Move o input
+
+                setTimeout(() => {
+                    $(this).prop('disabled', false); // Reabilita o input após mover
+                    isMoving = false; // Desativa a flag de movimento
+                }, 500); // Tempo da transição
+            });
+
+            // Mover o input para uma nova posição aleatória
+            function moveInput() {
+                const windowWidth = $(window).width();
+                const windowHeight = $(window).height();
+                const inputWidth = $('#birthdayInput').outerWidth();
+                const inputHeight = $('#birthdayInput').outerHeight();
+
+                // Calcula uma nova posição aleatória
+                const x = Math.random() * (windowWidth - inputWidth);
+                const y = Math.random() * (windowHeight - inputHeight);
+
+                // Move a caixa de texto para a nova posição
+                $('#birthdayInput').css({
+                    left: x + 'px',
+                    top: y + 'px'
+                });
+
+                // Inicia a contagem para desabilitar após a duração total
+                setTimeout(() => {
+                    resetInput(); // Reseta a caixa de texto
+                }, moveDuration);
+            }
+
+            // Reseta o input para a posição inicial e exibe a mensagem
+            function resetInput() {
+                $('#birthdayInput').css(initialPosition); 
+                $('#birthdayInput').val('Just kidding :)').prop('disabled', true);
+                setTimeout(() => {
+                    $('#birthdayInput').val('Até logo :)')
+                }, 3000); // Tempo de espera antes de exibir a mensagem
+                if (!isFetchingMessage) {
+                    isFetchingMessage = true; // Set fetching flag
+                    fetchBirthdayMessage();
+                }
+                
+            }
+
+            function fetchBirthdayMessage() {
+                $.ajax({
+                    url: '/birthday',  
+                    method: 'GET',
+                    success: function(response) {
+                        displayMessageLineByLine(response.message);
+                    },
+                    error: function(error) {
+                        console.log('Error:', error);
+                    }
+                });
+            }
+
+            function displayMessageLineByLine(message) {
+                const lines = message.split('<br>');  
+                let index = 0;
+                const preElement = $('#message');
+                
+                // Clear the previous content
+                preElement.html('');  
+
+                function displayNextLine() {
+                    if (index < lines.length) {
+                        preElement.append(lines[index] + '<br>');
+                        index++;
+                        setTimeout(displayNextLine, 500);  // Atraso de 1000ms
+                    }
+                }
+                
+                displayNextLine();  
+            }
+        });
+    </script>
+</body>
+</html>
