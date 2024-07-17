@@ -32,5 +32,5 @@ def birthday():
     return jsonify(message=message_html)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
 
